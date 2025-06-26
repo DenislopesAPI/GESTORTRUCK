@@ -43,6 +43,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
       <?php if ($temPermissao): ?>
+
         <button onclick="openDrawer()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
           <i class="ph ph-user-plus"></i> Novo Motorista
         </button>
@@ -98,6 +99,29 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 <div id="drawer-backdrop" onclick="closeDrawer()" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
+<!-- Modal Remoção -->
+<div id="modalRemover" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
+    <h2 class="text-xl font-semibold mb-4">Remover Motorista</h2>
+    <p class="mb-6">
+      Tem certeza que deseja remover este motorista?<br>
+      <strong class="text-red-600">Esta ação não poderá ser desfeita.</strong>
+    </p>
+    <form action="processa_motorista.php" method="POST">
+      <input type="hidden" name="id_motorista" id="id_motorista_remover">
+      <input type="hidden" name="acao" value="remover">
+      <div class="flex justify-end gap-4">
+        <button type="button" onclick="fecharModalRemover()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+          Cancelar
+        </button>
+        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+          Remover
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   function openDrawer() {
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
@@ -110,7 +134,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-
   document.getElementById('nome').addEventListener('input', verificarCampos);
   document.getElementById('telefone').addEventListener('input', verificarCampos);
 
@@ -118,6 +141,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
     document.getElementById('btnGerar').disabled = !(nome && telefone);
+
   }
 </script>
 </body>
