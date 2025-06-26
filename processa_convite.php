@@ -190,7 +190,8 @@ try {
 
     $mail->send();
 
-    header('Location: usuarios.php?status=sucesso');
+$redirect = isset($_POST['redirect']) ? $_POST['redirect'] : 'usuarios.php';
+    header('Location: ' . $redirect . '?status=sucesso');
     exit;
 
 } catch (Exception $e) {
