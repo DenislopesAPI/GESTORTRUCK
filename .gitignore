@@ -1,0 +1,12 @@
+# Environment files
+.env
+
+# Local testing script
+teste_smtp.php
+
+# Temporary files
+*.log
+*.tmp
+*.cache
+.DS_Store
+Thumbs.db
