@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $account_id = $_SESSION['account_id'];
-$email_sessao = $_SESSION['email'];
 
 // Verificar permissao
 $stmt = $pdo->prepare("SELECT pode_gerenciar_usuarios FROM permissoes_usuarios WHERE user_id = :user_id");
@@ -35,23 +34,20 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <?php include 'menu_sidebar.php'; ?>
 
   <div class="flex-1 p-6">
-    <?php if (!$temPermissao): ?>
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-red-600 mb-4">❌ Acesso negado</h2>
-        <p>Você não tem permissão para acessar esta página.</p>
+    <?php if (isset($_GET['link'])): ?>
+      <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
+        Link gerado com sucesso! Copie e envie ao motorista:
+        <input type="text" class="mt-2 w-full border rounded px-2 py-1" readonly value="https://gestortruck.com.br/cadastro_usuario.php?token=<?= htmlspecialchars($_GET['link']) ?>">
       </div>
-    <?php else: ?>
-      <?php if (isset($_GET['status']) && $_GET['status'] === 'sucesso'): ?>
-        <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
-          Motorista salvo com sucesso!
-        </div>
-      <?php endif; ?>
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
+    <?php endif; ?>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
+      <?php if ($temPermissao): ?>
         <button onclick="openDrawer()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
           <i class="ph ph-user-plus"></i> Novo Motorista
         </button>
-      </div>
+      <?php endif; ?>
+    </div>
 
       <div class="bg-white rounded-lg shadow-md p-6">
         <table class="w-full text-sm">
@@ -59,7 +55,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr class="border-b">
               <th class="text-left p-2">Nome</th>
               <th class="text-left p-2">Status</th>
-              <th class="text-right p-2">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -73,17 +68,11 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Inativo</span>
                   <?php endif; ?>
                 </td>
-                <td class="p-2 text-right">
-                  <button onclick='editMotorista(<?= json_encode($m) ?>)' class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs">
-                    <i class="ph ph-pencil"></i> Editar
-                  </button>
-                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
-    <?php endif; ?>
   </div>
 </div>
 
@@ -95,55 +84,25 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
   <div class="p-4">
     <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4">
-      <input type="hidden" name="id_motorista" id="id_motorista">
       <div>
         <label class="block text-sm font-medium">Nome do Motorista</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
       </div>
       <div>
-        <label class="block text-sm font-medium">Status</label>
-        <select name="status" id="status" class="w-full border rounded-md px-3 py-2">
-          <option value="ativo">Ativo</option>
-          <option value="inativo">Inativo</option>
-        </select>
+        <label class="block text-sm font-medium">Telefone</label>
+        <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
       </div>
-      <input type="hidden" name="acao" id="acao" value="salvar">
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
-      <button type="button" onclick="abrirModalRemover()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md w-full">Remover Motorista</button>
+      <button type="submit" id="btnGerar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Gerar Link</button>
     </form>
   </div>
 </div>
 <div id="drawer-backdrop" onclick="closeDrawer()" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-<!-- Modal Remoção -->
-<div id="modalRemover" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
-    <h2 class="text-xl font-semibold mb-4">Remover Motorista</h2>
-    <p class="mb-6">
-      Tem certeza que deseja remover este motorista?<br>
-      <strong class="text-red-600">Esta ação não poderá ser desfeita.</strong>
-    </p>
-    <form action="processa_motorista.php" method="POST">
-      <input type="hidden" name="id_motorista" id="id_motorista_remover">
-      <input type="hidden" name="acao" value="remover">
-      <div class="flex justify-end gap-4">
-        <button type="button" onclick="fecharModalRemover()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
-          Cancelar
-        </button>
-        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
-          Remover
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <script>
   function openDrawer() {
-    document.getElementById('id_motorista').value = '';
-    document.getElementById('acao').value = 'salvar';
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
+    document.getElementById('btnGerar').disabled = true;
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
@@ -151,23 +110,14 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  function editMotorista(data) {
-    openDrawer();
-    document.getElementById('drawerTitle').innerText = 'Editar Motorista';
-    document.getElementById('nome').value = data.nome;
-    document.getElementById('status').value = data.status;
-    document.getElementById('id_motorista').value = data.id;
-    document.getElementById('acao').value = 'editar';
-  }
 
-  function abrirModalRemover() {
-    const idMot = document.getElementById('id_motorista').value;
-    document.getElementById('id_motorista_remover').value = idMot;
-    document.getElementById('modalRemover').classList.remove('hidden');
-  }
+  document.getElementById('nome').addEventListener('input', verificarCampos);
+  document.getElementById('telefone').addEventListener('input', verificarCampos);
 
-  function fecharModalRemover() {
-    document.getElementById('modalRemover').classList.add('hidden');
+  function verificarCampos() {
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    document.getElementById('btnGerar').disabled = !(nome && telefone);
   }
 </script>
 </body>
