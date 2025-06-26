@@ -1,8 +1,6 @@
 <?php
 session_start();
 require_once 'db_config.php';
-
-$motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
