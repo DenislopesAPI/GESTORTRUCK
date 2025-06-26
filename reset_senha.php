@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'config.php';
 require_once 'db_config.php';
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
@@ -33,14 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail = new PHPMailer(true);
 
             $mail->isSMTP();
-            $mail->Host       = 'smtp.hostinger.com';
+            $mail->Host       = $smtp_host;
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'user_invite@gestortruck.com.br';
-            $mail->Password   = 'Le@070210';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port       = 465;
+            $mail->Username   = $smtp_user;
+            $mail->Password   = $smtp_pass;
+            $mail->SMTPSecure = $smtp_secure;
+            $mail->Port       = $smtp_port;
 
-            $mail->setFrom('user_invite@gestortruck.com.br', 'Gestor Truck');
+            $mail->setFrom($smtp_from_email, $smtp_from_name);
             $mail->addAddress($email, $usuario['nome']);
 
             $link = "https://www.gestortruck.com.br/definir_nova_senha.php?token=" . $token;
