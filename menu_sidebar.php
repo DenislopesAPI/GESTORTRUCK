@@ -48,6 +48,10 @@ if (session_status() == PHP_SESSION_NONE) {
               <i class="ph ph-user"></i>
               <span class="menu-text">Usuários</span>
             </a>
+            <a href="motoristas.php" class="flex items-center gap-3 p-2 hover:bg-blue-800 rounded">
+              <i class="ph ph-steering-wheel"></i>
+              <span class="menu-text">Motoristas</span>
+            </a>
             <a href="clientes.php" class="flex items-center gap-3 p-2 hover:bg-blue-800 rounded">
               <i class="ph ph-users"></i>
               <span class="menu-text">Clientes</span>
