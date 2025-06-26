@@ -17,8 +17,8 @@ $permissoes = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $temPermissao = ($permissoes && $permissoes['pode_gerenciar_usuarios'] == 1);
 
-// Buscar convites de motoristas
-$stmt = $pdo->prepare("SELECT * FROM convites_usuarios WHERE account_id = :account_id AND tipo_usuario = 'Motorista'");
+// Buscar motoristas cadastrados manualmente
+$stmt = $pdo->prepare("SELECT * FROM motoristas WHERE account_id = :account_id");
 $stmt->execute(['account_id' => $account_id]);
 $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -43,7 +43,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php else: ?>
       <?php if (isset($_GET['status']) && $_GET['status'] === 'sucesso'): ?>
         <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
-          Convite gerado com sucesso! Verifique seu e-mail para copiar o link e enviar ao motorista.
+          Motorista salvo com sucesso!
         </div>
       <?php endif; ?>
       <div class="flex justify-between items-center mb-6">
@@ -70,7 +70,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <?php if ($m['status'] === 'ativo'): ?>
                     <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Ativo</span>
                   <?php else: ?>
-                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Pendente</span>
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Inativo</span>
                   <?php endif; ?>
                 </td>
                 <td class="p-2 text-right">
@@ -94,34 +94,56 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <button onclick="closeDrawer()"><i class="ph ph-x text-xl"></i></button>
   </div>
   <div class="p-4">
-    <form id="formMotorista" action="processa_convite.php" method="POST" class="space-y-4">
-      <input type="hidden" name="id_convite" id="id_convite">
-      <input type="hidden" name="redirect" value="motoristas.php">
+    <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4">
+      <input type="hidden" name="id_motorista" id="id_motorista">
       <div>
         <label class="block text-sm font-medium">Nome do Motorista</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
       </div>
       <div>
-        <label class="block text-sm font-medium">Seu e-mail</label>
-        <div class="flex gap-2">
-          <input type="email" value="<?= htmlspecialchars($email_sessao) ?>" disabled class="flex-1 border rounded-md px-3 py-2 bg-gray-100">
-          <button type="button" onclick="confirmEmail()" id="btnConfirm" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">Confirmar e-mail</button>
-        </div>
-        <input type="hidden" name="email" value="<?= htmlspecialchars($email_sessao) ?>">
+        <label class="block text-sm font-medium">Status</label>
+        <select name="status" id="status" class="w-full border rounded-md px-3 py-2">
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
       </div>
-      <input type="hidden" name="tipo_usuario" value="Motorista">
-      <button type="submit" id="btnEnviar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Enviar Convite</button>
+      <input type="hidden" name="acao" id="acao" value="salvar">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
+      <button type="button" onclick="abrirModalRemover()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md w-full">Remover Motorista</button>
     </form>
   </div>
 </div>
 <div id="drawer-backdrop" onclick="closeDrawer()" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
+<!-- Modal Remoção -->
+<div id="modalRemover" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
+    <h2 class="text-xl font-semibold mb-4">Remover Motorista</h2>
+    <p class="mb-6">
+      Tem certeza que deseja remover este motorista?<br>
+      <strong class="text-red-600">Esta ação não poderá ser desfeita.</strong>
+    </p>
+    <form action="processa_motorista.php" method="POST">
+      <input type="hidden" name="id_motorista" id="id_motorista_remover">
+      <input type="hidden" name="acao" value="remover">
+      <div class="flex justify-end gap-4">
+        <button type="button" onclick="fecharModalRemover()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+          Cancelar
+        </button>
+        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+          Remover
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   function openDrawer() {
-    document.getElementById('id_convite').value = '';
+    document.getElementById('id_motorista').value = '';
+    document.getElementById('acao').value = 'salvar';
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnEnviar').disabled = true;
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
@@ -129,16 +151,23 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  function confirmEmail() {
-    document.getElementById('btnEnviar').disabled = false;
-    document.getElementById('btnConfirm').disabled = true;
-  }
   function editMotorista(data) {
     openDrawer();
     document.getElementById('drawerTitle').innerText = 'Editar Motorista';
     document.getElementById('nome').value = data.nome;
-    document.getElementById('id_convite').value = data.id;
-    document.getElementById('btnConfirm').disabled = true;
+    document.getElementById('status').value = data.status;
+    document.getElementById('id_motorista').value = data.id;
+    document.getElementById('acao').value = 'editar';
+  }
+
+  function abrirModalRemover() {
+    const idMot = document.getElementById('id_motorista').value;
+    document.getElementById('id_motorista_remover').value = idMot;
+    document.getElementById('modalRemover').classList.remove('hidden');
+  }
+
+  function fecharModalRemover() {
+    document.getElementById('modalRemover').classList.add('hidden');
   }
 </script>
 </body>
