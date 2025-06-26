@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $account_id = $_SESSION['account_id'];
-$email_sessao = $_SESSION['email'];
 
 // Verificar permissao
 $stmt = $pdo->prepare("SELECT pode_gerenciar_usuarios FROM permissoes_usuarios WHERE user_id = :user_id");
@@ -17,8 +16,8 @@ $permissoes = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $temPermissao = ($permissoes && $permissoes['pode_gerenciar_usuarios'] == 1);
 
-// Buscar convites de motoristas
-$stmt = $pdo->prepare("SELECT * FROM convites_usuarios WHERE account_id = :account_id AND tipo_usuario = 'Motorista'");
+// Buscar motoristas cadastrados manualmente
+$stmt = $pdo->prepare("SELECT * FROM motoristas WHERE account_id = :account_id");
 $stmt->execute(['account_id' => $account_id]);
 $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -35,23 +34,28 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <?php include 'menu_sidebar.php'; ?>
 
   <div class="flex-1 p-6">
-    <?php if (!$temPermissao): ?>
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-red-600 mb-4">❌ Acesso negado</h2>
-        <p>Você não tem permissão para acessar esta página.</p>
-      </div>
-    <?php else: ?>
-      <?php if (isset($_GET['status']) && $_GET['status'] === 'sucesso'): ?>
-        <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
-          Convite gerado com sucesso! Verifique seu e-mail para copiar o link e enviar ao motorista.
+    <?php if (isset($_GET['link'])): ?>
+      <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4 text-center">
+        <p class="font-semibold mb-2">✔️ Link gerado com sucesso!</p>
+        <?php
+          $url = 'https://gestortruck.com.br/cadastro_usuario.php?token=' . urlencode($_GET['link']);
+          $mailLink = 'mailto:?subject=Convite%20Gestor%20Truck&body=' . urlencode('Cadastre-se pelo link: ' . $url);
+          $waLink = 'https://wa.me/?text=' . urlencode('Cadastre-se no Gestor Truck: ' . $url);
+        ?>
+        <div class="flex justify-center gap-4">
+          <a href="<?= $mailLink ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded" target="_blank">Enviar por Email</a>
+          <a href="<?= $waLink ?>" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded" target="_blank">Enviar pelo WhatsApp</a>
         </div>
-      <?php endif; ?>
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
+      </div>
+    <?php endif; ?>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
+      <?php if ($temPermissao): ?>
         <button onclick="openDrawer()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
           <i class="ph ph-user-plus"></i> Novo Motorista
         </button>
-      </div>
+      <?php endif; ?>
+    </div>
 
       <div class="bg-white rounded-lg shadow-md p-6">
         <table class="w-full text-sm">
@@ -59,7 +63,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr class="border-b">
               <th class="text-left p-2">Nome</th>
               <th class="text-left p-2">Status</th>
-              <th class="text-right p-2">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -70,20 +73,14 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <?php if ($m['status'] === 'ativo'): ?>
                     <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Ativo</span>
                   <?php else: ?>
-                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Pendente</span>
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Inativo</span>
                   <?php endif; ?>
-                </td>
-                <td class="p-2 text-right">
-                  <button onclick='editMotorista(<?= json_encode($m) ?>)' class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs">
-                    <i class="ph ph-pencil"></i> Editar
-                  </button>
                 </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
-    <?php endif; ?>
   </div>
 </div>
 
@@ -94,23 +91,16 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <button onclick="closeDrawer()"><i class="ph ph-x text-xl"></i></button>
   </div>
   <div class="p-4">
-    <form id="formMotorista" action="processa_convite.php" method="POST" class="space-y-4">
-      <input type="hidden" name="id_convite" id="id_convite">
-      <input type="hidden" name="redirect" value="motoristas.php">
+    <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4">
       <div>
         <label class="block text-sm font-medium">Nome do Motorista</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
       </div>
       <div>
-        <label class="block text-sm font-medium">Seu e-mail</label>
-        <div class="flex gap-2">
-          <input type="email" value="<?= htmlspecialchars($email_sessao) ?>" disabled class="flex-1 border rounded-md px-3 py-2 bg-gray-100">
-          <button type="button" onclick="confirmEmail()" id="btnConfirm" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">Confirmar e-mail</button>
-        </div>
-        <input type="hidden" name="email" value="<?= htmlspecialchars($email_sessao) ?>">
+        <label class="block text-sm font-medium">Telefone</label>
+        <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
       </div>
-      <input type="hidden" name="tipo_usuario" value="Motorista">
-      <button type="submit" id="btnEnviar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Enviar Convite</button>
+      <button type="submit" id="btnGerar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Gerar Link</button>
     </form>
   </div>
 </div>
@@ -118,10 +108,9 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <script>
   function openDrawer() {
-    document.getElementById('id_convite').value = '';
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnEnviar').disabled = true;
+    document.getElementById('btnGerar').disabled = true;
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
@@ -129,16 +118,14 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  function confirmEmail() {
-    document.getElementById('btnEnviar').disabled = false;
-    document.getElementById('btnConfirm').disabled = true;
-  }
-  function editMotorista(data) {
-    openDrawer();
-    document.getElementById('drawerTitle').innerText = 'Editar Motorista';
-    document.getElementById('nome').value = data.nome;
-    document.getElementById('id_convite').value = data.id;
-    document.getElementById('btnConfirm').disabled = true;
+
+  document.getElementById('nome').addEventListener('input', verificarCampos);
+  document.getElementById('telefone').addEventListener('input', verificarCampos);
+
+  function verificarCampos() {
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    document.getElementById('btnGerar').disabled = !(nome && telefone);
   }
 </script>
 </body>
