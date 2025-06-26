@@ -35,15 +35,22 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <div class="flex-1 p-6">
     <?php if (isset($_GET['link'])): ?>
-      <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4">
-        Link gerado com sucesso! Copie e envie ao motorista:
-        <input type="text" class="mt-2 w-full border rounded px-2 py-1" readonly value="https://gestortruck.com.br/cadastro_usuario.php?token=<?= htmlspecialchars($_GET['link']) ?>">
+      <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4 text-center">
+        <p class="font-semibold mb-2">✔️ Link gerado com sucesso!</p>
+        <?php
+          $url = 'https://gestortruck.com.br/cadastro_usuario.php?token=' . urlencode($_GET['link']);
+          $mailLink = 'mailto:?subject=Convite%20Gestor%20Truck&body=' . urlencode('Cadastre-se pelo link: ' . $url);
+          $waLink = 'https://wa.me/?text=' . urlencode('Cadastre-se no Gestor Truck: ' . $url);
+        ?>
+        <div class="flex justify-center gap-4">
+          <a href="<?= $mailLink ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded" target="_blank">Enviar por Email</a>
+          <a href="<?= $waLink ?>" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded" target="_blank">Enviar pelo WhatsApp</a>
+        </div>
       </div>
     <?php endif; ?>
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold">Gestão de Motoristas</h1>
       <?php if ($temPermissao): ?>
-
         <button onclick="openDrawer()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
           <i class="ph ph-user-plus"></i> Novo Motorista
         </button>
@@ -141,7 +148,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
     document.getElementById('btnGerar').disabled = !(nome && telefone);
-
   }
 </script>
 </body>
