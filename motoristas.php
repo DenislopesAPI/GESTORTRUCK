@@ -2,7 +2,7 @@
 session_start();
 require_once 'db_config.php';
 
-$motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Somente apos buscar convites iremos popular $motoristas
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -112,7 +112,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <input type="hidden" name="email" value="<?= htmlspecialchars($email_sessao) ?>">
       </div>
       <input type="hidden" name="tipo_usuario" value="Motorista">
-      <button type="submit" id="btnEnviar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Enviar Convite</button>
+      <button type="submit" id="btnEnviar" disabled class="bg-gray-400 text-white px-6 py-2 rounded-md w-full cursor-not-allowed">Enviar Convite</button>
     </form>
   </div>
 </div>
@@ -123,7 +123,14 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('id_convite').value = '';
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnEnviar').disabled = true;
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnConfirm = document.getElementById('btnConfirm');
+    btnEnviar.disabled = true;
+    btnEnviar.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+    btnEnviar.classList.add('bg-gray-400', 'cursor-not-allowed');
+    btnConfirm.disabled = false;
+    btnConfirm.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    btnConfirm.classList.add('bg-blue-600', 'hover:bg-blue-700');
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
@@ -132,15 +139,28 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
   function confirmEmail() {
-    document.getElementById('btnEnviar').disabled = false;
-    document.getElementById('btnConfirm').disabled = true;
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnConfirm = document.getElementById('btnConfirm');
+    btnEnviar.disabled = false;
+    btnEnviar.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    btnEnviar.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    btnConfirm.disabled = true;
+    btnConfirm.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+    btnConfirm.classList.add('bg-gray-400', 'cursor-not-allowed');
   }
   function editMotorista(data) {
     openDrawer();
     document.getElementById('drawerTitle').innerText = 'Editar Motorista';
     document.getElementById('nome').value = data.nome;
     document.getElementById('id_convite').value = data.id;
-    document.getElementById('btnConfirm').disabled = true;
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnConfirm = document.getElementById('btnConfirm');
+    btnEnviar.disabled = false;
+    btnEnviar.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    btnEnviar.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    btnConfirm.disabled = true;
+    btnConfirm.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+    btnConfirm.classList.add('bg-gray-400', 'cursor-not-allowed');
   }
 </script>
 </body>
