@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'config.php';
 require_once 'db_config.php';
 
 require 'PHPMailer/PHPMailer.php';
@@ -10,8 +11,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Configurações SMTP
-$email_remetente = 'user_invite@gestortruck.com.br';
-$senha_email = 'Le@070210';
+$email_remetente = $smtp_from_email;
+$senha_email = $smtp_pass;
 
 // Dados recebidos
 $account_id = $_SESSION['account_id'];
@@ -161,14 +162,14 @@ try {
     $mail = new PHPMailer(true);
 
     $mail->isSMTP();
-    $mail->Host       = 'smtp.hostinger.com';
+    $mail->Host       = $smtp_host;
     $mail->SMTPAuth   = true;
     $mail->Username   = $email_remetente;
     $mail->Password   = $senha_email;
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port       = 465;
+    $mail->SMTPSecure = $smtp_secure;
+    $mail->Port       = $smtp_port;
 
-    $mail->setFrom($email_remetente, 'Gestor Truck');
+    $mail->setFrom($email_remetente, $smtp_from_name);
     $mail->addAddress($email, $nome);
 
     $mail->isHTML(true);

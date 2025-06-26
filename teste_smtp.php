@@ -2,6 +2,8 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require_once 'config.php';
+
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
 require 'PHPMailer/Exception.php';
@@ -10,17 +12,17 @@ $mail = new PHPMailer(true);
 
 try {
     $mail->isSMTP();
-    $mail->Host       = 'smtp.hostinger.com';
+    $mail->Host       = $smtp_host;
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'user_invite@gestortruck.com.br';
-    $mail->Password   = 'Le@070210';
-    $mail->SMTPSecure = 'ssl'; // ou 'tls' para porta 587
-    $mail->Port       = 465; // ou 587 se usar tls
+    $mail->Username   = $smtp_user;
+    $mail->Password   = $smtp_pass;
+    $mail->SMTPSecure = $smtp_secure; // ou 'tls' para porta 587
+    $mail->Port       = $smtp_port; // ou 587 se usar tls
 
     // Remetente
-    $mail->setFrom('user_invite@gestortruck.com.br', 'Gestor Truck Teste');
+    $mail->setFrom($smtp_from_email, 'Gestor Truck Teste');
     // Destinatário
-    $mail->addAddress('user_invite@gestortruck.com.br', 'Gestor Truck');
+    $mail->addAddress($smtp_from_email, 'Gestor Truck');
 
     // Conteúdo
     $mail->isHTML(true);
