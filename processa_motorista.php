@@ -15,8 +15,7 @@ $cpf = $_POST['cpf'] ?? '';
 $rg = $_POST['rg'] ?? null;
 $data_nascimento = $_POST['data_nascimento'] ?? '';
 $telefone = $_POST['telefone'] ?? '';
-$telefone_emergencia = $_POST['telefone_emergencia'] ?? null;
-$email = $_POST['email'] ?? '';
+$email = $_POST['email'] ?? null;
 $cnh = $_POST['cnh'] ?? '';
 $categoria_cnh = $_POST['categoria_cnh'] ?? '';
 $validade_cnh = $_POST['validade_cnh'] ?? '';
@@ -31,14 +30,14 @@ $agencia = $_POST['agencia'] ?? null;
 $conta = $_POST['conta'] ?? null;
 $pix = $_POST['pix'] ?? null;
 $observacoes = $_POST['observacoes'] ?? null;
-$senha = $_POST['senha'] ?? '';
 
-if (!$nome || !$cpf || !$cnh || !$telefone || !$email || !$senha) {
+if (!$nome || !$cpf || !$cnh || !$telefone) {
     header('Location: motoristas.php');
     exit;
 }
 
-$senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+$senhaGerada = bin2hex(random_bytes(4));
+$senhaHash = password_hash($senhaGerada, PASSWORD_DEFAULT);
 
 try {
     $pdo->beginTransaction();
@@ -58,7 +57,7 @@ try {
     $stmt->execute(['user_id' => $user_id]);
 
     // inserir motorista
-    $stmt = $pdo->prepare("INSERT INTO motoristas (account_id, user_id, nome, cpf, rg, data_nascimento, cnh, categoria_cnh, validade_cnh, telefone, telefone_emergencia, email, endereco, bairro, cidade, estado, cep, banco, agencia, conta, pix, status, observacoes, data_admissao) VALUES (:account_id, :user_id, :nome, :cpf, :rg, :data_nascimento, :cnh, :categoria_cnh, :validade_cnh, :telefone, :telefone_emergencia, :email, :endereco, :bairro, :cidade, :estado, :cep, :banco, :agencia, :conta, :pix, 'ativo', :observacoes, :data_admissao)");
+    $stmt = $pdo->prepare("INSERT INTO motoristas (account_id, user_id, nome, cpf, rg, data_nascimento, cnh, categoria_cnh, validade_cnh, telefone, email, endereco, bairro, cidade, estado, cep, banco, agencia, conta, pix, status, observacoes, data_admissao) VALUES (:account_id, :user_id, :nome, :cpf, :rg, :data_nascimento, :cnh, :categoria_cnh, :validade_cnh, :telefone, :email, :endereco, :bairro, :cidade, :estado, :cep, :banco, :agencia, :conta, :pix, 'ativo', :observacoes, :data_admissao)");
     $stmt->execute([
         'account_id' => $account_id,
         'user_id' => $user_id,
@@ -70,7 +69,6 @@ try {
         'categoria_cnh' => $categoria_cnh,
         'validade_cnh' => $validade_cnh,
         'telefone' => $telefone,
-        'telefone_emergencia' => $telefone_emergencia,
         'email' => $email,
         'endereco' => $endereco,
         'bairro' => $bairro,

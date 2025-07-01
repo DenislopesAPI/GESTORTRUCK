@@ -94,7 +94,8 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-sm font-medium required-label">CPF</label>
-          <input type="text" name="cpf" id="cpf" required class="w-full border rounded-md px-3 py-2">
+
+          <input type="text" name="cpf" id="cpf" required maxlength="14" oninput="mascaraCPF(this)" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
@@ -110,19 +111,15 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div>
           <label class="block text-sm font-medium required-label">Telefone</label>
-          <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
+
+          <input type="text" name="telefone" id="telefone" required maxlength="15" oninput="mascaraTelefone(this)" class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Telefone Emergência</label>
-          <input type="text" name="telefone_emergencia" id="telefone_emergencia" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium required-label">Email</label>
-          <input type="email" name="email" id="email" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+        <div class="col-span-2">
+          <label class="block text-sm font-medium">Email</label>
+          <input type="email" name="email" id="email" class="w-full border rounded-md px-3 py-2">
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
@@ -204,11 +201,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <label class="block text-sm font-medium">Observações</label>
         <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
       </div>
-      <div>
-        <label class="block text-sm font-medium required-label">Senha de Acesso</label>
-        <input type="password" name="senha" id="senha" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-      </div>
       <button type="submit" id="btnSalvar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
     </form>
   </div>
@@ -251,7 +243,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  const requiredIds = ['nome','cpf','data_nascimento','telefone','email','cnh','categoria_cnh','validade_cnh','data_admissao','cep','endereco','bairro','cidade','estado','senha'];
+  const requiredIds = ['nome','cpf','data_nascimento','telefone','cnh','categoria_cnh','validade_cnh','data_admissao','cep','endereco','bairro','cidade','estado'];
   requiredIds.forEach(id => {
     document.getElementById(id).addEventListener('input', verificarCampos);
   });
@@ -263,6 +255,59 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
       if (!val) preenchido = false;
     });
     document.getElementById('btnSalvar').disabled = !preenchido;
+  }
+
+  document.getElementById('formMotorista').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    requiredIds.forEach(id => {
+      const input = document.getElementById(id);
+      const error = input.nextElementSibling;
+      if (input.value.trim() === '') {
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        error.classList.add('hidden');
+      }
+    });
+    if (valid && confirm('Confirmar cadastro do motorista?')) {
+      this.submit();
+    }
+  });
+
+  document.getElementById('cep').addEventListener('blur', buscarEndereco);
+
+  function mascaraCPF(el) {
+    let v = el.value.replace(/\D/g, '');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    el.value = v;
+  }
+
+  function mascaraTelefone(el) {
+    let v = el.value.replace(/\D/g, '');
+    v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+    v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+    el.value = v;
+  }
+
+  function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(r => r.json())
+        .then(d => {
+          if (!('erro' in d)) {
+            document.getElementById('endereco').value = d.logradouro;
+            document.getElementById('bairro').value = d.bairro;
+            document.getElementById('cidade').value = d.localidade;
+            document.getElementById('estado').value = d.uf;
+            verificarCampos();
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   document.getElementById('formMotorista').addEventListener('submit', function(e) {
