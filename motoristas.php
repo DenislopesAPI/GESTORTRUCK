@@ -199,7 +199,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <label class="block text-sm font-medium">Observações</label>
         <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
       </div>
-      <button type="submit" id="btnSalvar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
+      <button type="submit" id="btnSalvar" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
     </form>
   </div>
 </div>
@@ -244,7 +244,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   function openDrawer() {
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnSalvar').disabled = true;
     document.querySelectorAll('#formMotorista span.text-red-500').forEach(s => s.classList.add('hidden'));
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
@@ -254,18 +253,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
   const requiredIds = ['nome','cpf','data_nascimento','telefone','cnh','categoria_cnh','validade_cnh','data_admissao','cep','endereco','bairro','cidade','estado'];
-  requiredIds.forEach(id => {
-    document.getElementById(id).addEventListener('input', verificarCampos);
-  });
-
-  function verificarCampos() {
-    let preenchido = true;
-    requiredIds.forEach(id => {
-      const val = document.getElementById(id).value.trim();
-      if (!val) preenchido = false;
-    });
-    document.getElementById('btnSalvar').disabled = !preenchido;
-  }
 
   document.getElementById('formMotorista').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -309,6 +296,23 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
     v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
     el.value = v;
+  }
+
+  function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(r => r.json())
+        .then(d => {
+          if (!('erro' in d)) {
+            document.getElementById('endereco').value = d.logradouro;
+            document.getElementById('bairro').value = d.bairro;
+            document.getElementById('cidade').value = d.localidade;
+            document.getElementById('estado').value = d.uf;
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   function buscarEndereco() {
