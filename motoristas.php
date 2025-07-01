@@ -302,6 +302,24 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .catch(() => {});
     }
   }
+
+  document.getElementById('formMotorista').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    requiredIds.forEach(id => {
+      const input = document.getElementById(id);
+      const error = input.nextElementSibling;
+      if (input.value.trim() === '') {
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        error.classList.add('hidden');
+      }
+    });
+    if (valid && confirm('Confirmar cadastro do motorista?')) {
+      this.submit();
+    }
+  });
 </script>
 </body>
 </html>
