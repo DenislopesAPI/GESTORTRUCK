@@ -28,6 +28,9 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <title>Gestão de Motoristas - Gestor Truck</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .required-label::after { content: ' *'; color: red; }
+  </style>
 </head>
 <body class="bg-gray-100">
 <div class="flex">
@@ -84,13 +87,14 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="p-4">
     <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
       <div>
-        <label class="block text-sm font-medium">Nome *</label>
+
+        <label class="block text-sm font-medium required-label">Nome</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">CPF *</label>
+          <label class="block text-sm font-medium required-label">CPF</label>
           <input type="text" name="cpf" id="cpf" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
@@ -101,12 +105,12 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">Data de Nascimento *</label>
+          <label class="block text-sm font-medium required-label">Data de Nascimento</label>
           <input type="date" name="data_nascimento" id="data_nascimento" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium">Telefone *</label>
+          <label class="block text-sm font-medium required-label">Telefone</label>
           <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
@@ -117,158 +121,60 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="text" name="telefone_emergencia" id="telefone_emergencia" class="w-full border rounded-md px-3 py-2">
         </div>
         <div>
-          <label class="block text-sm font-medium">Email *</label>
+          <label class="block text-sm font-medium required-label">Email</label>
           <input type="email" name="email" id="email" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">CNH *</label>
+          <label class="block text-sm font-medium required-label">CNH</label>
           <input type="text" name="cnh" id="cnh" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium">Categoria CNH *</label>
+          <label class="block text-sm font-medium required-label">Categoria CNH</label>
           <input type="text" name="categoria_cnh" id="categoria_cnh" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">Validade CNH *</label>
+          <label class="block text-sm font-medium required-label">Validade CNH</label>
           <input type="date" name="validade_cnh" id="validade_cnh" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium">Data de Admissão *</label>
+          <label class="block text-sm font-medium required-label">Data de Admissão</label>
           <input type="date" name="data_admissao" id="data_admissao" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">CPF</label>
-          <input type="text" name="cpf" id="cpf" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">RG</label>
-          <input type="text" name="rg" id="rg" class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Data de Nascimento</label>
-          <input type="date" name="data_nascimento" id="data_nascimento" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Telefone</label>
-          <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Telefone Emergência</label>
-          <input type="text" name="telefone_emergencia" id="telefone_emergencia" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Email</label>
-          <input type="email" name="email" id="email" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">CNH</label>
-          <input type="text" name="cnh" id="cnh" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Categoria CNH</label>
-          <input type="text" name="categoria_cnh" id="categoria_cnh" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Validade CNH</label>
-          <input type="date" name="validade_cnh" id="validade_cnh" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Data de Admissão</label>
-          <input type="date" name="data_admissao" id="data_admissao" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
       <div>
-        <label class="block text-sm font-medium">Endereço</label>
-        <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Bairro</label>
-          <input type="text" name="bairro" id="bairro" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Cidade</label>
-          <input type="text" name="cidade" id="cidade" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Estado</label>
-          <input type="text" name="estado" id="estado" required class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">CEP</label>
-          <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Banco</label>
-          <input type="text" name="banco" id="banco" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Agência</label>
-          <input type="text" name="agencia" id="agencia" class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Conta</label>
-          <input type="text" name="conta" id="conta" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">PIX</label>
-          <input type="text" name="pix" id="pix" class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Observações</label>
-        <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Endereço *</label>
+        <label class="block text-sm font-medium required-label">Endereço</label>
         <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">Bairro *</label>
+          <label class="block text-sm font-medium required-label">Bairro</label>
           <input type="text" name="bairro" id="bairro" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium">Cidade *</label>
+          <label class="block text-sm font-medium required-label">Cidade</label>
           <input type="text" name="cidade" id="cidade" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-sm font-medium">Estado *</label>
+          <label class="block text-sm font-medium required-label">Estado</label>
           <input type="text" name="estado" id="estado" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium">CEP *</label>
+          <label class="block text-sm font-medium required-label">CEP</label>
           <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
@@ -298,7 +204,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
       </div>
       <div>
-        <label class="block text-sm font-medium">Senha de Acesso *</label>
+        <label class="block text-sm font-medium required-label">Senha de Acesso</label>
         <input type="password" name="senha" id="senha" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
       </div>
