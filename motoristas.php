@@ -328,6 +328,62 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .catch(() => {});
     }
   }
+
+  document.getElementById('formMotorista').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    requiredIds.forEach(id => {
+      const input = document.getElementById(id);
+      const error = input.nextElementSibling;
+      if (input.value.trim() === '') {
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        error.classList.add('hidden');
+      }
+    });
+    if (valid && confirm('Confirmar cadastro do motorista?')) {
+      this.submit();
+    }
+  });
+
+  document.getElementById('cep').addEventListener('blur', buscarEndereco);
+
+  function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(r => r.json())
+        .then(d => {
+          if (!('erro' in d)) {
+            document.getElementById('endereco').value = d.logradouro;
+            document.getElementById('bairro').value = d.bairro;
+            document.getElementById('cidade').value = d.localidade;
+            document.getElementById('estado').value = d.uf;
+            verificarCampos();
+          }
+        })
+        .catch(() => {});
+    }
+  }
+
+  document.getElementById('formMotorista').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    requiredIds.forEach(id => {
+      const input = document.getElementById(id);
+      const error = input.nextElementSibling;
+      if (input.value.trim() === '') {
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        error.classList.add('hidden');
+      }
+    });
+    if (valid && confirm('Confirmar cadastro do motorista?')) {
+      this.submit();
+    }
+  });
 </script>
 </body>
 </html>
