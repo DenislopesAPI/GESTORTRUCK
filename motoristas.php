@@ -87,6 +87,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="p-4">
     <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
       <div>
+
         <label class="block text-sm font-medium required-label">Nome</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
