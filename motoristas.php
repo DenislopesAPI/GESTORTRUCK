@@ -87,7 +87,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="p-4">
     <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
       <div>
-
         <label class="block text-sm font-medium required-label">Nome</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
@@ -150,10 +149,17 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
-      <div>
-        <label class="block text-sm font-medium required-label">Endereço</label>
-        <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium required-label">CEP</label>
+          <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
+          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+        </div>
+        <div>
+          <label class="block text-sm font-medium required-label">Endereço</label>
+          <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
+          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+        </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
@@ -171,11 +177,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div>
           <label class="block text-sm font-medium required-label">Estado</label>
           <input type="text" name="estado" id="estado" required class="w-full border rounded-md px-3 py-2">
-          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-        <div>
-          <label class="block text-sm font-medium required-label">CEP</label>
-          <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
@@ -250,7 +251,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  const requiredIds = ['nome','cpf','data_nascimento','telefone','email','cnh','categoria_cnh','validade_cnh','data_admissao','endereco','bairro','cidade','estado','cep','senha'];
+  const requiredIds = ['nome','cpf','data_nascimento','telefone','email','cnh','categoria_cnh','validade_cnh','data_admissao','cep','endereco','bairro','cidade','estado','senha'];
   requiredIds.forEach(id => {
     document.getElementById(id).addEventListener('input', verificarCampos);
   });
@@ -262,6 +263,44 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
       if (!val) preenchido = false;
     });
     document.getElementById('btnSalvar').disabled = !preenchido;
+  }
+
+  document.getElementById('formMotorista').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    requiredIds.forEach(id => {
+      const input = document.getElementById(id);
+      const error = input.nextElementSibling;
+      if (input.value.trim() === '') {
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        error.classList.add('hidden');
+      }
+    });
+    if (valid && confirm('Confirmar cadastro do motorista?')) {
+      this.submit();
+    }
+  });
+
+  document.getElementById('cep').addEventListener('blur', buscarEndereco);
+
+  function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(r => r.json())
+        .then(d => {
+          if (!('erro' in d)) {
+            document.getElementById('endereco').value = d.logradouro;
+            document.getElementById('bairro').value = d.bairro;
+            document.getElementById('cidade').value = d.localidade;
+            document.getElementById('estado').value = d.uf;
+            verificarCampos();
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   document.getElementById('formMotorista').addEventListener('submit', function(e) {
