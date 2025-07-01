@@ -40,6 +40,12 @@ $senhaGerada = bin2hex(random_bytes(4));
 $senhaHash = password_hash($senhaGerada, PASSWORD_DEFAULT);
 
 try {
+    // verificar coluna user_id na tabela motoristas
+    $check = $pdo->query("SHOW COLUMNS FROM motoristas LIKE 'user_id'");
+    if ($check->rowCount() == 0) {
+        $pdo->exec("ALTER TABLE motoristas ADD COLUMN user_id INT NULL");
+    }
+
     $pdo->beginTransaction();
 
     // criar usuario

@@ -94,7 +94,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-sm font-medium required-label">CPF</label>
-
           <input type="text" name="cpf" id="cpf" required maxlength="14" oninput="mascaraCPF(this)" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
@@ -111,7 +110,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div>
           <label class="block text-sm font-medium required-label">Telefone</label>
-
           <input type="text" name="telefone" id="telefone" required maxlength="15" oninput="mascaraTelefone(this)" class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
@@ -227,6 +225,18 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </button>
       </div>
     </form>
+</div>
+</div>
+
+<!-- Modal Confirmação -->
+<div id="modalConfirm" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
+    <h2 class="text-xl font-semibold mb-4">Confirmar Cadastro</h2>
+    <p class="mb-6">Deseja realmente salvar o motorista?</p>
+    <div class="flex justify-end gap-4">
+      <button type="button" onclick="fecharModalConfirm()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Cancelar</button>
+      <button type="button" onclick="enviarFormulario()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Confirmar</button>
+    </div>
   </div>
 </div>
 
@@ -270,10 +280,19 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         error.classList.add('hidden');
       }
     });
-    if (valid && confirm('Confirmar cadastro do motorista?')) {
-      this.submit();
+    if (valid) {
+      document.getElementById('modalConfirm').classList.remove('hidden');
     }
   });
+
+  function fecharModalConfirm() {
+    document.getElementById('modalConfirm').classList.add('hidden');
+  }
+
+  function enviarFormulario() {
+    document.getElementById('modalConfirm').classList.add('hidden');
+    document.getElementById('formMotorista').submit();
+  }
 
   document.getElementById('cep').addEventListener('blur', buscarEndereco);
 
