@@ -130,7 +130,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <label class="block text-sm font-medium">Observação</label>
         <textarea name="observacao" id="observacao" class="w-full border rounded-md px-3 py-2"></textarea>
       </div>
-      <button type="submit" id="btnSalvar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
+      <button type="submit" id="btnSalvar" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
     </form>
   </div>
 </div>
@@ -175,7 +175,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   function openDrawer() {
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnSalvar').disabled = true;
     document.querySelectorAll('#formMotorista span.text-red-500').forEach(s => s.classList.add('hidden'));
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
