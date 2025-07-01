@@ -34,18 +34,9 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <?php include 'menu_sidebar.php'; ?>
 
   <div class="flex-1 p-6">
-    <?php if (isset($_GET['link'])): ?>
+    <?php if (isset($_GET['sucesso'])): ?>
       <div class="bg-green-100 text-green-700 px-4 py-3 rounded mb-4 text-center">
-        <p class="font-semibold mb-2">✔️ Link gerado com sucesso!</p>
-        <?php
-          $url = 'https://gestortruck.com.br/cadastro_usuario.php?token=' . urlencode($_GET['link']);
-          $mailLink = 'mailto:?subject=Convite%20Gestor%20Truck&body=' . urlencode('Cadastre-se pelo link: ' . $url);
-          $waLink = 'https://wa.me/?text=' . urlencode('Cadastre-se no Gestor Truck: ' . $url);
-        ?>
-        <div class="flex justify-center gap-4">
-          <a href="<?= $mailLink ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded" target="_blank">Enviar por Email</a>
-          <a href="<?= $waLink ?>" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded" target="_blank">Enviar pelo WhatsApp</a>
-        </div>
+        <p class="font-semibold">✔️ Motorista cadastrado com sucesso!</p>
       </div>
     <?php endif; ?>
     <div class="flex justify-between items-center mb-6">
@@ -91,16 +82,114 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <button onclick="closeDrawer()"><i class="ph ph-x text-xl"></i></button>
   </div>
   <div class="p-4">
-    <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4">
+    <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
       <div>
-        <label class="block text-sm font-medium">Nome do Motorista</label>
+        <label class="block text-sm font-medium">Nome</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
       </div>
-      <div>
-        <label class="block text-sm font-medium">Telefone</label>
-        <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">CPF</label>
+          <input type="text" name="cpf" id="cpf" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">RG</label>
+          <input type="text" name="rg" id="rg" class="w-full border rounded-md px-3 py-2">
+        </div>
       </div>
-      <button type="submit" id="btnGerar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Gerar Link</button>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Data de Nascimento</label>
+          <input type="date" name="data_nascimento" id="data_nascimento" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Telefone</label>
+          <input type="text" name="telefone" id="telefone" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Telefone Emergência</label>
+          <input type="text" name="telefone_emergencia" id="telefone_emergencia" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Email</label>
+          <input type="email" name="email" id="email" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">CNH</label>
+          <input type="text" name="cnh" id="cnh" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Categoria CNH</label>
+          <input type="text" name="categoria_cnh" id="categoria_cnh" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Validade CNH</label>
+          <input type="date" name="validade_cnh" id="validade_cnh" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Data de Admissão</label>
+          <input type="date" name="data_admissao" id="data_admissao" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Endereço</label>
+        <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Bairro</label>
+          <input type="text" name="bairro" id="bairro" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Cidade</label>
+          <input type="text" name="cidade" id="cidade" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Estado</label>
+          <input type="text" name="estado" id="estado" required class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">CEP</label>
+          <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Banco</label>
+          <input type="text" name="banco" id="banco" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Agência</label>
+          <input type="text" name="agencia" id="agencia" class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-sm font-medium">Conta</label>
+          <input type="text" name="conta" id="conta" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">PIX</label>
+          <input type="text" name="pix" id="pix" class="w-full border rounded-md px-3 py-2">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Observações</label>
+        <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Senha de Acesso</label>
+        <input type="password" name="senha" id="senha" required class="w-full border rounded-md px-3 py-2">
+      </div>
+      <button type="submit" id="btnSalvar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
     </form>
   </div>
 </div>
@@ -133,7 +222,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   function openDrawer() {
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
-    document.getElementById('btnGerar').disabled = true;
+    document.getElementById('btnSalvar').disabled = true;
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
@@ -143,11 +232,19 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
   document.getElementById('nome').addEventListener('input', verificarCampos);
   document.getElementById('telefone').addEventListener('input', verificarCampos);
+  document.getElementById('cpf').addEventListener('input', verificarCampos);
+  document.getElementById('cnh').addEventListener('input', verificarCampos);
+  document.getElementById('email').addEventListener('input', verificarCampos);
+  document.getElementById('senha').addEventListener('input', verificarCampos);
 
   function verificarCampos() {
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
-    document.getElementById('btnGerar').disabled = !(nome && telefone);
+    const cpf = document.getElementById('cpf').value.trim();
+    const cnh = document.getElementById('cnh').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+    document.getElementById('btnSalvar').disabled = !(nome && telefone && cpf && cnh && email && senha);
   }
 </script>
 </body>
