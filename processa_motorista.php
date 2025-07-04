@@ -82,7 +82,6 @@ try {
     }
 
     $stmt->execute($params);
-
     header('Location: motoristas.php?sucesso=1');
     exit;
 } catch (Exception $e) {
