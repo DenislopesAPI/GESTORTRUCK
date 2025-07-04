@@ -96,13 +96,13 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <input type="hidden" name="acao" id="acao" value="salvar">
       <div>
         <label class="block text-sm font-medium required-label">Nome</label>
-        <input type="text" name="nome" id="nome" class="w-full border rounded-md px-3 py-2">
+        <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
         <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-sm font-medium required-label">CPF</label>
-          <input type="text" name="cpf" id="cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full border rounded-md px-3 py-2">
+          <input type="text" name="cpf" id="cpf" required maxlength="14" oninput="mascaraCPF(this)" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
@@ -278,6 +278,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
     el.value = v;
   }
+
 </script>
 </body>
 </html>
