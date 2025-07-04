@@ -71,9 +71,12 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Inativo</span>
                   <?php endif; ?>
                 </td>
-                <td class="p-2 text-right">
+                <td class="p-2 text-right flex gap-2 justify-end">
                   <button onclick='editMotorista(<?= json_encode($m) ?>)' class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs">
                     <i class="ph ph-pencil"></i> Editar
+                  </button>
+                  <button onclick='removerMotorista(<?= $m['id'] ?>)' class="bg-red-200 hover:bg-red-300 px-3 py-1 rounded text-xs">
+                    <i class="ph ph-trash"></i> Remover
                   </button>
                 </td>
               </tr>
@@ -264,6 +267,15 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('formMotorista').submit();
   }
 
+  function removerMotorista(id) {
+    document.getElementById('id_motorista_remover').value = id;
+    document.getElementById('modalRemover').classList.remove('hidden');
+  }
+
+  function fecharModalRemover() {
+    document.getElementById('modalRemover').classList.add('hidden');
+  }
+
   function mascaraCPF(el) {
     let v = el.value.replace(/\D/g, '');
     v = v.replace(/(\d{3})(\d)/, '$1.$2');
@@ -278,7 +290,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
     el.value = v;
   }
-
 </script>
 </body>
 </html>
