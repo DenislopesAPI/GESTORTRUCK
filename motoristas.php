@@ -57,6 +57,7 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr class="border-b">
               <th class="text-left p-2">Nome</th>
               <th class="text-left p-2">Status</th>
+              <th class="text-right p-2">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +70,11 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <?php else: ?>
                     <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Inativo</span>
                   <?php endif; ?>
+                </td>
+                <td class="p-2 text-right">
+                  <button onclick='editMotorista(<?= json_encode($m) ?>)' class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs">
+                    <i class="ph ph-pencil"></i> Editar
+                  </button>
                 </td>
               </tr>
             <?php endforeach; ?>
@@ -85,7 +91,9 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <button onclick="closeDrawer()"><i class="ph ph-x text-xl"></i></button>
   </div>
   <div class="p-4">
-    <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
+      <form id="formMotorista" action="processa_motorista.php" method="POST" class="space-y-4 overflow-y-auto h-[90vh] pr-2">
+        <input type="hidden" name="id_motorista" id="id_motorista">
+        <input type="hidden" name="acao" id="acao" value="salvar">
       <div>
         <label class="block text-sm font-medium required-label">Nome</label>
         <input type="text" name="nome" id="nome" required class="w-full border rounded-md px-3 py-2">
@@ -97,107 +105,49 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="text" name="cpf" id="cpf" required maxlength="14" oninput="mascaraCPF(this)" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
-        <div>
-          <label class="block text-sm font-medium">RG</label>
-          <input type="text" name="rg" id="rg" class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium required-label">Data de Nascimento</label>
-          <input type="date" name="data_nascimento" id="data_nascimento" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-        <div>
-          <label class="block text-sm font-medium required-label">Telefone</label>
-          <input type="text" name="telefone" id="telefone" required maxlength="15" oninput="mascaraTelefone(this)" class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div class="col-span-2">
-          <label class="block text-sm font-medium">Email</label>
-          <input type="email" name="email" id="email" class="w-full border rounded-md px-3 py-2">
-        </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-sm font-medium required-label">CNH</label>
-          <input type="text" name="cnh" id="cnh" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+          <input type="text" name="cnh" id="cnh" class="w-full border rounded-md px-3 py-2">
+          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
           <label class="block text-sm font-medium required-label">Categoria CNH</label>
-          <input type="text" name="categoria_cnh" id="categoria_cnh" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
+          <input type="text" name="categoria_cnh" id="categoria_cnh" class="w-full border rounded-md px-3 py-2">
+          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-sm font-medium required-label">Validade CNH</label>
-          <input type="date" name="validade_cnh" id="validade_cnh" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-        <div>
-          <label class="block text-sm font-medium required-label">Data de Admissão</label>
-          <input type="date" name="data_admissao" id="data_admissao" required class="w-full border rounded-md px-3 py-2">
-        <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium required-label">CEP</label>
-          <input type="text" name="cep" id="cep" required class="w-full border rounded-md px-3 py-2">
+          <input type="date" name="validade_cnh" id="validade_cnh" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
         </div>
         <div>
-          <label class="block text-sm font-medium required-label">Endereço</label>
-          <input type="text" name="endereco" id="endereco" required class="w-full border rounded-md px-3 py-2">
+          <label class="block text-sm font-medium required-label">Telefone</label>
+          <input type="text" name="telefone" id="telefone" maxlength="15" oninput="mascaraTelefone(this)" class="w-full border rounded-md px-3 py-2">
           <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium required-label">Bairro</label>
-          <input type="text" name="bairro" id="bairro" required class="w-full border rounded-md px-3 py-2">
-          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-        <div>
-          <label class="block text-sm font-medium required-label">Cidade</label>
-          <input type="text" name="cidade" id="cidade" required class="w-full border rounded-md px-3 py-2">
-          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium required-label">Estado</label>
-          <input type="text" name="estado" id="estado" required class="w-full border rounded-md px-3 py-2">
-          <span class="text-red-500 text-sm hidden">Campo obrigatório</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Banco</label>
-          <input type="text" name="banco" id="banco" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Agência</label>
-          <input type="text" name="agencia" id="agencia" class="w-full border rounded-md px-3 py-2">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-sm font-medium">Conta</label>
-          <input type="text" name="conta" id="conta" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">PIX</label>
-          <input type="text" name="pix" id="pix" class="w-full border rounded-md px-3 py-2">
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium">Observações</label>
-        <textarea name="observacoes" id="observacoes" class="w-full border rounded-md px-3 py-2"></textarea>
+        <label class="block text-sm font-medium">Endereço</label>
+        <input type="text" name="endereco" id="endereco" class="w-full border rounded-md px-3 py-2">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Observação</label>
+        <textarea name="observacao" id="observacao" class="w-full border rounded-md px-3 py-2"></textarea>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold mb-2">Permissões</h3>
+        <div class="grid grid-cols-1 gap-2">
+          <label><input type="checkbox" name="pode_gerenciar_viagens" id="pode_gerenciar_viagens"> Gerenciar Viagens</label>
+          <label><input type="checkbox" name="pode_gerenciar_abastecimentos" id="pode_gerenciar_abastecimentos"> Gerenciar Abastecimentos</label>
+          <label><input type="checkbox" name="pode_gerenciar_manutencoes" id="pode_gerenciar_manutencoes"> Gerenciar Manutenções</label>
+          <label><input type="checkbox" name="pode_gerenciar_clientes" id="pode_gerenciar_clientes"> Gerenciar Clientes</label>
+          <label><input type="checkbox" name="pode_gerenciar_usuarios" id="pode_gerenciar_usuarios"> Gerenciar Usuários</label>
+          <label><input type="checkbox" name="pode_ver_relatorios" id="pode_ver_relatorios"> Ver Relatórios</label>
+        </div>
       </div>
       <button type="submit" id="btnSalvar" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md w-full">Salvar</button>
     </form>
@@ -244,26 +194,46 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
   function openDrawer() {
     document.getElementById('drawerTitle').innerText = 'Novo Motorista';
     document.getElementById('formMotorista').reset();
+    document.getElementById('id_motorista').value = '';
+    document.getElementById('acao').value = 'salvar';
     document.getElementById('btnSalvar').disabled = true;
     document.querySelectorAll('#formMotorista span.text-red-500').forEach(s => s.classList.add('hidden'));
     document.getElementById('drawer').classList.remove('translate-x-full');
     document.getElementById('drawer-backdrop').classList.remove('hidden');
   }
+
+  function editMotorista(data) {
+    openDrawer();
+    document.getElementById('drawerTitle').innerText = 'Editar Motorista';
+    document.getElementById('id_motorista').value = data.id;
+    document.getElementById('acao').value = 'editar';
+    document.getElementById('nome').value = data.nome;
+    document.getElementById('cpf').value = data.cpf;
+    document.getElementById('telefone').value = data.telefone;
+    document.getElementById('cnh').value = data.numero_cnh;
+    document.getElementById('categoria_cnh').value = data.categoria_cnh;
+    document.getElementById('validade_cnh').value = data.validade_cnh;
+    document.getElementById('endereco').value = data.endereco ?? '';
+    document.getElementById('observacao').value = data.observacao ?? '';
+    document.getElementById('pode_gerenciar_viagens').checked = data.pode_gerenciar_viagens == 1;
+    document.getElementById('pode_gerenciar_abastecimentos').checked = data.pode_gerenciar_abastecimentos == 1;
+    document.getElementById('pode_gerenciar_manutencoes').checked = data.pode_gerenciar_manutencoes == 1;
+    document.getElementById('pode_gerenciar_clientes').checked = data.pode_gerenciar_clientes == 1;
+    document.getElementById('pode_gerenciar_usuarios').checked = data.pode_gerenciar_usuarios == 1;
+    document.getElementById('pode_ver_relatorios').checked = data.pode_ver_relatorios == 1;
+    verificarCampos();
+  }
+
   function closeDrawer() {
     document.getElementById('drawer').classList.add('translate-x-full');
     document.getElementById('drawer-backdrop').classList.add('hidden');
   }
-  const requiredIds = ['nome','cpf','data_nascimento','telefone','cnh','categoria_cnh','validade_cnh','data_admissao','cep','endereco','bairro','cidade','estado'];
-  requiredIds.forEach(id => {
-    document.getElementById(id).addEventListener('input', verificarCampos);
-  });
+
+  const requiredIds = ['nome','cpf','telefone','cnh','categoria_cnh','validade_cnh'];
+  requiredIds.forEach(id => document.getElementById(id).addEventListener('input', verificarCampos));
 
   function verificarCampos() {
-    let preenchido = true;
-    requiredIds.forEach(id => {
-      const val = document.getElementById(id).value.trim();
-      if (!val) preenchido = false;
-    });
+    const preenchido = requiredIds.every(id => document.getElementById(id).value.trim() !== '');
     document.getElementById('btnSalvar').disabled = !preenchido;
   }
 
@@ -294,8 +264,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.getElementById('formMotorista').submit();
   }
 
-  document.getElementById('cep').addEventListener('blur', buscarEndereco);
-
   function mascaraCPF(el) {
     let v = el.value.replace(/\D/g, '');
     v = v.replace(/(\d{3})(\d)/, '$1.$2');
@@ -311,79 +279,6 @@ $motoristas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     el.value = v;
   }
 
-  function buscarEndereco() {
-    const cep = document.getElementById('cep').value.replace(/\D/g, '');
-    if (cep.length === 8) {
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(r => r.json())
-        .then(d => {
-          if (!('erro' in d)) {
-            document.getElementById('endereco').value = d.logradouro;
-            document.getElementById('bairro').value = d.bairro;
-            document.getElementById('cidade').value = d.localidade;
-            document.getElementById('estado').value = d.uf;
-            verificarCampos();
-          }
-        })
-        .catch(() => {});
-    }
-  }
-
-  document.getElementById('formMotorista').addEventListener('submit', function(e) {
-    e.preventDefault();
-    let valid = true;
-    requiredIds.forEach(id => {
-      const input = document.getElementById(id);
-      const error = input.nextElementSibling;
-      if (input.value.trim() === '') {
-        error.classList.remove('hidden');
-        valid = false;
-      } else {
-        error.classList.add('hidden');
-      }
-    });
-    if (valid && confirm('Confirmar cadastro do motorista?')) {
-      this.submit();
-    }
-  });
-
-  document.getElementById('cep').addEventListener('blur', buscarEndereco);
-
-  function buscarEndereco() {
-    const cep = document.getElementById('cep').value.replace(/\D/g, '');
-    if (cep.length === 8) {
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(r => r.json())
-        .then(d => {
-          if (!('erro' in d)) {
-            document.getElementById('endereco').value = d.logradouro;
-            document.getElementById('bairro').value = d.bairro;
-            document.getElementById('cidade').value = d.localidade;
-            document.getElementById('estado').value = d.uf;
-            verificarCampos();
-          }
-        })
-        .catch(() => {});
-    }
-  }
-
-  document.getElementById('formMotorista').addEventListener('submit', function(e) {
-    e.preventDefault();
-    let valid = true;
-    requiredIds.forEach(id => {
-      const input = document.getElementById(id);
-      const error = input.nextElementSibling;
-      if (input.value.trim() === '') {
-        error.classList.remove('hidden');
-        valid = false;
-      } else {
-        error.classList.add('hidden');
-      }
-    });
-    if (valid && confirm('Confirmar cadastro do motorista?')) {
-      this.submit();
-    }
-  });
 </script>
 </body>
 </html>
